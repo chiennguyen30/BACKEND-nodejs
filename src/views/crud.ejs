@@ -1,0 +1,109 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRUD NGUYEN VAN CHIEN</title>
+    <!-- Latest compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+
+    <!-- jQuery library -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <form action="/post" method="post">
+          <div class="form-row">
+            <div class="col-12 my-3"><h2>Create a new user</h2></div>
+            <div class="form-group col-6">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                placeholder="Email"
+                name="email"
+              />
+            </div>
+            <div class="form-group col-6">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                placeholder="Password"
+                name="password"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="firstName">First name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="firstName"
+                placeholder="First name"
+                name="firstName"
+              />
+            </div>
+            <div class="form-group col-6">
+              <label for="lastName">Last name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="lastName"
+                placeholder="Last name"
+                name="lastName"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="Address">Address</label>
+            <input
+              type="text"
+              class="form-control"
+              id="Address"
+              placeholder="Address"
+              name="Address"
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="phoneNumber">Phone number</label>
+              <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" />
+            </div>
+            <div class="form-group col-3">
+              <label for="Gender">Gender</label>
+              <select name="gender" class="form-control">
+                <option value="1">Male</option>
+                <option value="0">Female</option>
+              </select>
+            </div>
+            <div class="form-group col-3">
+              <label for="role">Role</label>
+              <select name="roleId" class="form-control">
+                <option value="1">Admin</option>
+                <option value="2">Doctor</option>
+                <option value="3">patient</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Sign in</button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
+;

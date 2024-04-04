@@ -20,6 +20,8 @@
     "@babel/core": "^7.12.10",
     "@babel/node": "^7.12.10",
     "@babel/preset-env": "^7.12.10",
+    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
     "mysql2": "^2.2.5",
     "nodemon": "^2.0.7",
     "sequelize-cli": "^6.2.0"
