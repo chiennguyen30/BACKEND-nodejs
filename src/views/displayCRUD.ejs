@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <style>
+    table,
+    th,
+    td {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+  </style>
+  <body>
+    <table style="width: 100%">
+      <tr>
+        <th>id</th>
+        <th>email</th>
+        <th>first name</th>
+        <th>last name</th>
+        <th>address</th>
+      </tr>
+      <% for(var i=0; i < dataTable.length; i++) { %>
+      <tr>
+        <td><%= dataTable[i].id %></td>
+        <td><%= dataTable[i].email %></td>
+        <td><%= dataTable[i].firstName %></td>
+        <td><%= dataTable[i].lastName %></td>
+        <td><%= dataTable[i].address %></td>
+      </tr>
+      <% } %>
+    </table>
+  </body>
+</html>
