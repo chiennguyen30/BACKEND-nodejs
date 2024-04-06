@@ -2,7 +2,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CRUD NGUYEN VAN CHIEN</title>
+    <title>Edit user infomation</title>
     <!-- Latest compiled and minified CSS -->
     <link
       rel="stylesheet"
@@ -21,31 +21,9 @@
   <body>
     <div class="container">
       <div class="row">
-        <form action="/post" method="post">
+        <form action="/edit-user" method="post">
           <div class="form-row">
-            <div class="col-12 my-3"><h2>Create a new user</h2></div>
-            <div class="form-group col-6">
-              <label for="email">Email</label>
-              <input
-                type="email"
-                class="form-control"
-                id="email"
-                placeholder="Email"
-                name="email"
-              />
-            </div>
-            <div class="form-group col-6">
-              <label for="password">Password</label>
-              <input
-                type="password"
-                class="form-control"
-                id="password"
-                placeholder="Password"
-                name="password"
-              />
-            </div>
-          </div>
-          <div class="form-row">
+            <div class="col-12 mt-3"><h3>Edit user infomation</h3></div>
             <div class="form-group col-6">
               <label for="firstName">First name</label>
               <input
@@ -54,6 +32,7 @@
                 id="firstName"
                 placeholder="First name"
                 name="firstName"
+                value="<%= data.firstName  %>"
               />
             </div>
             <div class="form-group col-6">
@@ -64,6 +43,7 @@
                 id="lastName"
                 placeholder="Last name"
                 name="lastName"
+                value="<%= data.lastName  %>"
               />
             </div>
           </div>
@@ -75,32 +55,24 @@
               id="Address"
               placeholder="Address"
               name="address"
+              value="<%= data.address  %>"
             />
           </div>
 
           <div class="form-row">
-            <div class="form-group col-6">
+            <div class="form-group col-12">
               <label for="phoneNumber">Phone number</label>
-              <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" />
-            </div>
-            <div class="form-group col-3">
-              <label for="Gender">Gender</label>
-              <select name="gender" class="form-control">
-                <option value="1">Male</option>
-                <option value="0">Female</option>
-              </select>
-            </div>
-            <div class="form-group col-3">
-              <label for="role">Role</label>
-              <select name="roleId" class="form-control">
-                <option value="1">Admin</option>
-                <option value="2">Doctor</option>
-                <option value="3">patient</option>
-              </select>
+              <input
+                type="text"
+                class="form-control"
+                id="phoneNumber"
+                name="phoneNumber"
+                value="<%= data.phoneNumber  %>"
+              />
             </div>
           </div>
-
-          <button type="submit" class="btn btn-primary">Sign in</button>
+          <input type="text" name="id" value="<%= data.id  %>" hidden />
+          <button type="submit" class="btn btn-primary">Update</button>
         </form>
       </div>
     </div>
