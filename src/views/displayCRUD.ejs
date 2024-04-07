@@ -9,6 +9,7 @@
     }
   </style>
   <body>
+    <a href="/add-user">Add a user</a>
     <table style="width: 100%">
       <tr>
         <th>id</th>
@@ -29,7 +30,7 @@
         <td><%= dataTable[i].phoneNumber %></td>
         <td style="text-align: center">
           <a href="/edit?id=<%= dataTable[i].id %>" type="button">Edit</a>
-          <a type="button">Delete</a>
+          <a href="/delete?id=<%= dataTable[i].id %>" type="button">Delete</a>
         </td>
       </tr>
       <% } %>
