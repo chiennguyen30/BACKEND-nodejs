@@ -14,7 +14,7 @@ let handleUserLogin = (email, password) => {
         });
         if (user) {
           // compare passwordsss
-          let check = await bcrypt.compareSync(password, user.password); // <false></false>
+          let check = await bcrypt.compareSync(password, user.password);
           if (check) {
             userData.errCode = 0;
             userData.errMessage = "ok";

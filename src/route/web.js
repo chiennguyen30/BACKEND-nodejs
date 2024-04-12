@@ -12,6 +12,7 @@ let initWebRoutes = (app) => {
   router.get("/edit", homeController.editCRUD);
   router.post("/edit-user", homeController.editUserCRUD);
   router.get("/delete", homeController.deleteUserCRUD);
+
   // user controller
   router.post("/api/login", userController.handleLogin);
 
