@@ -108,7 +108,7 @@ let createNewUser = (data) => {
         });
         return; // Dừng thực thi của hàm nếu email đã tồn tại
       } else {
-        // Nếu email chưa tồn tại, tiếp tục kiểm tra các điều kiện khác
+        // Nếu email chưa tồn tại, tiếp tục kiểm tra xem người dùng nhập có đúng trường email không
         // Ví dụ: Kiểm tra định dạng email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(data.email)) {
@@ -118,7 +118,6 @@ let createNewUser = (data) => {
           });
           return;
         }
-        // Kiểm tra các điều kiện khác nếu cần
 
         // Nếu không có vấn đề gì, tiến hành tạo mới user
         let hashPasswordFromBcrypt = await hashUserPassword(data.password);
@@ -180,7 +179,7 @@ let deleteUser = (userId) => {
 let updateUserData = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.id) {
+      if (!data.id || !data.roleId || !data.positionId || !data.gender) {
         resolve({
           errCode: 2,
           errMessage: "Missing required parameters",
@@ -194,6 +193,10 @@ let updateUserData = (data) => {
         user.firstName = data.firstName;
         user.lastName = data.lastName;
         user.address = data.address;
+        user.phoneNumber = data.phoneNumber;
+        user.roleId = data.roleId;
+        user.positionId = data.positionId;
+        user.gender = data.gender;
         await user.save();
         resolve({
           errCode: 0,
