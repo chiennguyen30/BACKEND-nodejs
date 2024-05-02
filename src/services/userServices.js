@@ -108,17 +108,6 @@ let createNewUser = (data) => {
         });
         return; // Dừng thực thi của hàm nếu email đã tồn tại
       } else {
-        // Nếu email chưa tồn tại, tiếp tục kiểm tra xem người dùng nhập có đúng trường email không
-        // Ví dụ: Kiểm tra định dạng email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(data.email)) {
-          resolve({
-            errCode: 2,
-            errMessage: "Invalid email format",
-          });
-          return;
-        }
-
         // Nếu không có vấn đề gì, tiến hành tạo mới user
         let hashPasswordFromBcrypt = await hashUserPassword(data.password);
         await db.User.create({
@@ -131,13 +120,13 @@ let createNewUser = (data) => {
           gender: data.gender,
           roleId: data.roleId,
           positionId: data.positionId,
+          image: data.avatar,
+        });
+        resolve({
+          errCode: 0,
+          message: "Success",
         });
       }
-
-      resolve({
-        errCode: 0,
-        message: "Success",
-      });
     } catch (error) {
       reject(error);
     }
@@ -197,6 +186,9 @@ let updateUserData = (data) => {
         user.roleId = data.roleId;
         user.positionId = data.positionId;
         user.gender = data.gender;
+        if (data.avatar) {
+          user.image = data.avatar;
+        }
         await user.save();
         resolve({
           errCode: 0,
