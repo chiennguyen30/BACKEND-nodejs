@@ -14,4 +14,32 @@ let getTopDoctorHome = async (req, res) => {
   }
 };
 
-module.exports = { getTopDoctorHome: getTopDoctorHome };
+let getAllDoctor = async (req, res) => {
+  try {
+    let doctors = await doctorServices.getAllDoctorsServices();
+    return res.status(200).json(doctors);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: "Error form the server",
+    });
+  }
+};
+let postInforDoctor = async (req, res) => {
+  try {
+    let response = await doctorServices.saveDetailInforDoctor(req.body);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: "Error form the server",
+    });
+  }
+};
+module.exports = {
+  getTopDoctorHome: getTopDoctorHome,
+  getAllDoctor: getAllDoctor,
+  postInforDoctor: postInforDoctor,
+};

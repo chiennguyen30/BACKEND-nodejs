@@ -40,5 +40,46 @@ let getTopDoctorHome = (limitInput) => {
   });
 };
 
+let getAllDoctorsServices = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let doctors = await db.User.findAll({
+        where: { roleId: "R2" },
+        attributes: {
+          exclude: ["password", "image", "phoneNumber"],
+        },
+      });
+      resolve({
+        errCode: 0,
+        data: doctors,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+let saveDetailInforDoctor = (inputData) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!inputData.id || !inputData.contentHTML || !inputData.contentMarkdown) {
+        // Tiếp tục xử lý dữ liệu ở đây
+        await db.Markdown.create({
+          contentHTML: inputData.contentHTML,
+          contentMarkdown: inputData.contentMarkdown,
+          description: inputData.description,
+          doctorId: inputData.doctorId,
+        });
+        resolve({
+          errCode: 0,
+          errMessage: "Save infro doctor succeed!!",
+        });
+      } else {
+        resolve({ errCode: 1, errMessage: "Missing parameter" });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 // Xuất hàm getTopDoctorHome để có thể sử dụng ở nơi khác
-module.exports = { getTopDoctorHome };
+module.exports = { getTopDoctorHome, getAllDoctorsServices, saveDetailInforDoctor };
