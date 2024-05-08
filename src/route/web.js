@@ -5,6 +5,7 @@ import doctorController from "../controllers/doctorController";
 let router = express.Router();
 
 let initWebRoutes = (app) => {
+  // home controller
   router.get("/", homeController.getHomePage);
   router.get("/about", homeController.getAboutPage);
   router.get("/add-user", homeController.getCRUD);
@@ -20,13 +21,13 @@ let initWebRoutes = (app) => {
   router.post("/api/create-new-user", userController.handleCreateNewUser);
   router.put("/api/edit-user", userController.handleEditUser);
   router.delete("/api/delete-user", userController.handleDeleteUser);
-
-  //database table allcodes
   router.get("/api/allcode", userController.GetAllCode);
-  // get doctor
+
+  //  doctor controller
   router.get("/api/top-doctor-home", doctorController.getTopDoctorHome);
   router.get("/api/get-all-doctors", doctorController.getAllDoctor);
   router.post("/api/save-infor-doctors", doctorController.postInforDoctor);
+  router.get("/api/get-detail-doctor-by-id", doctorController.getDetailDoctorById);
 
   return app.use("/", router);
 };
