@@ -1,5 +1,9 @@
 // Import thư viện db từ thư mục models
 import db from "../models";
+import _ from "lodash";
+require("dotenv").config();
+
+const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
 
 // Khai báo hàm getTopDoctorHome nhận tham số limitInput
 let getTopDoctorHome = (limitInput) => {
@@ -128,10 +132,56 @@ let getDetailDoctorByIdServices = (inputId) => {
     }
   });
 };
+
+let bulkCreateScheduleServices = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.arrSchedule || !data.doctorId || !data.formateDate) {
+        resolve({
+          errCode: -1,
+          errMessage: "Missing required parameter!!!",
+        });
+      } else {
+        let schedule = data.arrSchedule;
+        if (schedule && schedule.length > 0) {
+          schedule = schedule.map((item) => {
+            item.maxNumber = MAX_NUMBER_SCHEDULE;
+            return item;
+          });
+        }
+
+        let existing = await db.Schedule.findAll({
+          where: { doctorId: data.doctorId, date: data.formateDate },
+          attributes: ["timeType", "date", "doctorId", "maxNumber"],
+          raw: true,
+        });
+        if (existing && existing.length > 0) {
+          existing = existing.map((item) => {
+            item.date = new Date(item.date).getTime();
+            return item;
+          });
+        }
+        let toCreate = _.differenceWith(schedule, existing, (a, b) => {
+          return a.timeType === b.timeType && a.date === b.date;
+        });
+        if (toCreate && toCreate.length > 0) {
+          await db.Schedule.bulkCreate(toCreate);
+        }
+        resolve({
+          errCode: 0,
+          errMessage: "Success",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 // Xuất hàm getTopDoctorHome để có thể sử dụng ở nơi khác
 module.exports = {
   getTopDoctorHome,
   getAllDoctorsServices,
   saveDetailInforDoctor,
   getDetailDoctorByIdServices,
+  bulkCreateScheduleServices,
 };
