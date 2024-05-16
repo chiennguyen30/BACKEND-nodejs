@@ -1,6 +1,6 @@
 // Import thư viện db từ thư mục models
 import db from "../models";
-import _ from "lodash";
+import _, { reject } from "lodash";
 require("dotenv").config();
 
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
@@ -43,7 +43,6 @@ let getTopDoctorHome = (limitInput) => {
     }
   });
 };
-
 let getAllDoctorsServices = () => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -132,7 +131,6 @@ let getDetailDoctorByIdServices = (inputId) => {
     }
   });
 };
-
 let bulkCreateScheduleServices = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -149,21 +147,17 @@ let bulkCreateScheduleServices = (data) => {
             return item;
           });
         }
-
+        // get all existing data
         let existing = await db.Schedule.findAll({
           where: { doctorId: data.doctorId, date: data.formateDate },
           attributes: ["timeType", "date", "doctorId", "maxNumber"],
           raw: true,
         });
-        if (existing && existing.length > 0) {
-          existing = existing.map((item) => {
-            item.date = new Date(item.date).getTime();
-            return item;
-          });
-        }
+        // compare different
         let toCreate = _.differenceWith(schedule, existing, (a, b) => {
-          return a.timeType === b.timeType && a.date === b.date;
+          return a.timeType === b.timeType && +a.date === +b.date;
         });
+        //create data
         if (toCreate && toCreate.length > 0) {
           await db.Schedule.bulkCreate(toCreate);
         }
@@ -177,6 +171,35 @@ let bulkCreateScheduleServices = (data) => {
     }
   });
 };
+let getScheduleByDateServices = (doctorId, date) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!doctorId || !date) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing requied parameter!!!",
+        });
+      } else {
+        let data = await db.Schedule.findAll({
+          where: { doctorId, date },
+          include: [
+            { model: db.Allcode, as: "timeTypeData", attributes: ["valueEn", "valueVi"] },
+          ],
+          raw: false,
+          nest: true,
+        });
+        if (!data) data = [];
+        resolve({
+          errCode: 0,
+          data,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 // Xuất hàm getTopDoctorHome để có thể sử dụng ở nơi khác
 module.exports = {
   getTopDoctorHome,
@@ -184,4 +207,5 @@ module.exports = {
   saveDetailInforDoctor,
   getDetailDoctorByIdServices,
   bulkCreateScheduleServices,
+  getScheduleByDateServices,
 };
