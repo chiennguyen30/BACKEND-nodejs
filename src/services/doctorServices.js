@@ -68,10 +68,17 @@ let saveDetailInforDoctor = (inputData) => {
         !inputData.doctorId ||
         !inputData.contentHTML ||
         !inputData.contentMarkdown ||
-        !inputData.action
+        !inputData.action ||
+        !inputData.SelectPrice ||
+        !inputData.SelectPayment ||
+        !inputData.SelectProvince ||
+        !inputData.nameClinic ||
+        !inputData.addressClinic ||
+        !inputData.note
       ) {
         resolve({ errCode: 1, errMessage: "Missing parameter" });
       } else {
+        //upsert to markdown
         if (inputData.action === "CREATE") {
           await db.Markdown.create({
             contentHTML: inputData.contentHTML,
@@ -88,8 +95,37 @@ let saveDetailInforDoctor = (inputData) => {
             doctorMarkdown.contentHTML = inputData.contentHTML;
             doctorMarkdown.contentMarkdown = inputData.contentMarkdown;
             doctorMarkdown.description = inputData.description;
+            doctorMarkdown.updateAt = new Date();
             await doctorMarkdown.save();
           }
+        }
+
+        //upsert to Doctor_Infor table
+        let doctorInfor = await db.Doctor_Infor.findOne({
+          where: { doctorId: inputData.doctorId },
+          raw: false,
+        });
+        if (doctorInfor) {
+          //update
+          doctorInfor.doctorId = inputData.doctorId;
+          doctorInfor.priceId = inputData.SelectPrice;
+          doctorInfor.paymentId = inputData.SelectPayment;
+          doctorInfor.provinceId = inputData.SelectProvince;
+          doctorInfor.nameClinic = inputData.nameClinic;
+          doctorInfor.addressClinic = inputData.addressClinic;
+          doctorInfor.note = inputData.note;
+          await doctorInfor.save();
+        } else {
+          //create
+          await db.Doctor_Infor.create({
+            doctorId: inputData.doctorId,
+            priceId: inputData.SelectPrice,
+            paymentId: inputData.SelectPayment,
+            provinceId: inputData.SelectProvince,
+            nameClinic: inputData.nameClinic,
+            addressClinic: inputData.addressClinic,
+            note: inputData.note,
+          });
         }
         resolve({
           errCode: 0,
@@ -118,7 +154,7 @@ let getDetailDoctorByIdServices = (inputId) => {
           nest: true,
         });
         if (data && data.image) {
-          data.image = new Buffer(data.image, "base64").toString("binary");
+          data.image = new Buffer.from(data.image, "base64").toString("binary");
         }
         if (!data) data = {};
         resolve({
@@ -182,9 +218,7 @@ let getScheduleByDateServices = (doctorId, date) => {
       } else {
         let data = await db.Schedule.findAll({
           where: { doctorId, date },
-          include: [
-            { model: db.Allcode, as: "timeTypeData", attributes: ["valueEn", "valueVi"] },
-          ],
+          include: [{ model: db.Allcode, as: "timeTypeData", attributes: ["valueEn", "valueVi"] }],
           raw: false,
           nest: true,
         });
@@ -200,7 +234,6 @@ let getScheduleByDateServices = (doctorId, date) => {
   });
 };
 
-// Xuất hàm getTopDoctorHome để có thể sử dụng ở nơi khác
 module.exports = {
   getTopDoctorHome,
   getAllDoctorsServices,
