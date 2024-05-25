@@ -1,6 +1,6 @@
 // Import thư viện db từ thư mục models
 import db from "../models";
-import _, { reject } from "lodash";
+import _, { includes, reject } from "lodash";
 require("dotenv").config();
 
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
@@ -69,9 +69,9 @@ let saveDetailInforDoctor = (inputData) => {
         !inputData.contentHTML ||
         !inputData.contentMarkdown ||
         !inputData.action ||
-        !inputData.SelectPrice ||
-        !inputData.SelectPayment ||
-        !inputData.SelectProvince ||
+        !inputData.selectPrice ||
+        !inputData.selectPayment ||
+        !inputData.selectProvince ||
         !inputData.nameClinic ||
         !inputData.addressClinic ||
         !inputData.note
@@ -108,9 +108,9 @@ let saveDetailInforDoctor = (inputData) => {
         if (doctorInfor) {
           //update
           doctorInfor.doctorId = inputData.doctorId;
-          doctorInfor.priceId = inputData.SelectPrice;
-          doctorInfor.paymentId = inputData.SelectPayment;
-          doctorInfor.provinceId = inputData.SelectProvince;
+          doctorInfor.priceId = inputData.selectPrice;
+          doctorInfor.paymentId = inputData.selectPayment;
+          doctorInfor.provinceId = inputData.selectProvince;
           doctorInfor.nameClinic = inputData.nameClinic;
           doctorInfor.addressClinic = inputData.addressClinic;
           doctorInfor.note = inputData.note;
@@ -119,9 +119,9 @@ let saveDetailInforDoctor = (inputData) => {
           //create
           await db.Doctor_Infor.create({
             doctorId: inputData.doctorId,
-            priceId: inputData.SelectPrice,
-            paymentId: inputData.SelectPayment,
-            provinceId: inputData.SelectProvince,
+            priceId: inputData.selectPrice,
+            paymentId: inputData.selectPayment,
+            provinceId: inputData.selectProvince,
             nameClinic: inputData.nameClinic,
             addressClinic: inputData.addressClinic,
             note: inputData.note,
@@ -149,6 +149,15 @@ let getDetailDoctorByIdServices = (inputId) => {
           include: [
             { model: db.Markdown, attributes: ["description", "contentHTML", "contentMarkdown"] },
             { model: db.Allcode, as: "positionData", attributes: ["valueEn", "valueVi"] },
+            {
+              model: db.Doctor_Infor,
+              attributes: { exclude: ["id", "doctorId"] },
+              include: [
+                { model: db.Allcode, as: "priceTypeData", attributes: ["valueEn", "valueVi"] },
+                { model: db.Allcode, as: "provinceTypeData", attributes: ["valueEn", "valueVi"] },
+                { model: db.Allcode, as: "paymentTypeData", attributes: ["valueEn", "valueVi"] },
+              ],
+            },
           ],
           raw: false,
           nest: true,
@@ -233,7 +242,37 @@ let getScheduleByDateServices = (doctorId, date) => {
     }
   });
 };
-
+let getExtraInforDoctorByIdServices = (doctorId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!doctorId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing requied parameter!!!",
+        });
+      } else {
+        let data = await db.Doctor_Infor.findOne({
+          where: { doctorId },
+          attributes: { exclude: ["id", "doctorId"] },
+          include: [
+            { model: db.Allcode, as: "priceTypeData", attributes: ["valueEn", "valueVi"] },
+            { model: db.Allcode, as: "provinceTypeData", attributes: ["valueEn", "valueVi"] },
+            { model: db.Allcode, as: "paymentTypeData", attributes: ["valueEn", "valueVi"] },
+          ],
+          raw: false,
+          nest: true,
+        });
+        if (!data) data = {};
+        resolve({
+          errCode: 0,
+          data: data,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 module.exports = {
   getTopDoctorHome,
   getAllDoctorsServices,
@@ -241,4 +280,5 @@ module.exports = {
   getDetailDoctorByIdServices,
   bulkCreateScheduleServices,
   getScheduleByDateServices,
+  getExtraInforDoctorByIdServices,
 };
