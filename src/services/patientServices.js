@@ -7,12 +7,12 @@ let patientBookAppointmentServices = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Check for missing parameters in the input data
-      if (!data.email || !data.doctorId || !data.timeType || !data.date) {
+      if (!data.email || !data.doctorId || !data.timeType || !data.date || !data.fullName) {
         resolve({ errCode: 1, errMessage: "Missing parameter" }); // Resolve with an error message if any parameter is missing
       } else {
         await emailServices.sendSimpleEmail({
           receivers: data.email,
-          patientName: "NVC BookingCare",
+          patientName: data.fullName,
           time: "8:00 - 9:00 Thứ tư 29/5/2024",
           doctorName: "bác sĩ Chiến",
           redirectLink: "https://www.w3schools.com/html/",
