@@ -2,7 +2,7 @@ require("dotenv").config();
 import nodemailer from "nodemailer";
 
 let sendSimpleEmail = async (dataSend) => {
-  const transporter = nodemailer.createTransport({
+  let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
     secure: false, // Use `true` for port 465, `false` for all other ports
@@ -11,24 +11,48 @@ let sendSimpleEmail = async (dataSend) => {
       pass: process.env.EMAIL_APP_PASSWORD,
     },
   });
-  const info = await transporter.sendMail({
+  let info = await transporter.sendMail({
     from: '"nguyen van chien 👻" <nguyenchien30102001@gmail.com>', // sender address
     to: dataSend.receivers, // list of receivers
     subject: "Thông tin đặt lịch khám bệnh", // Subject line
-    html: `
-      <h3> Xin chào ${dataSend.patientName}</h3>
-      <p>Bạn đã nhận được thư phản hồi đặt lịch khám bệnh online trên NVC BookingCare</p>
-      <p>Thông tin đặt lịch khám bệnh</p>
-      <div><b>Thời gian : ${dataSend.time}</b></div>
-      <div><b>Bác sĩ : ${dataSend.doctorName}</b></div>
-
-      <p>Nếu các thông tin trên là đúng sự thật, vui lòng click vào đường dẫn bên dưới để xác nhận và hoàn tất thủ tục đặt lịch khám bệnh</p>
-      <div>
-        <a href=${dataSend.redirectLink} target=""_blank>Click here</a>
-      </div>
-      <p>Xin chân thành cảm ơn</p>
-    `,
+    html: getBodyHTMLEmail(dataSend),
   });
+};
+
+let getBodyHTMLEmail = (dataSend) => {
+  let resutl = "";
+  if (dataSend.language === "vi") {
+    resutl = `
+    <h3> Xin chào ${dataSend.patientName}</h3>
+    <p>Bạn đã nhận được thư phản hồi đặt lịch khám bệnh online trên NVC BookingCare</p>
+    <p>Thông tin đặt lịch khám bệnh</p>
+    <div><b>Thời gian : ${dataSend.time}</b></div>
+    <div><b>Bác sĩ : ${dataSend.doctorName}</b></div>
+
+    <p>Nếu các thông tin trên là đúng sự thật, vui lòng click vào đường dẫn bên dưới để xác nhận và hoàn tất thủ tục đặt lịch khám bệnh</p>
+    <div>
+      <a href=${dataSend.redirectLink} target=""_blank>Click here</a>
+    </div>
+    <p>Xin chân thành cảm ơn</p>
+  `;
+  }
+  if (dataSend.language === "en") {
+    resutl = `
+    <h3> Dear ${dataSend.patientName}</h3>
+    <p>You have received a response letter for online medical appointment booking on NVC BookingCare</p>
+    <p>Medical appointment booking information</p>
+    <div><b>Time: ${dataSend.time}</b></div>
+    <div><b>Doctor: ${dataSend.doctorName}</b></div>
+
+    <p>If the above information is correct, please click on the link below to confirm and complete the medical appointment booking procedure</p>
+    <div>
+      <a href=${dataSend.redirectLink} target="_blank">Click here</a>
+    </div>
+    <p>Thank you very much</p>
+   
+  `;
+  }
+  return resutl;
 };
 
 module.exports = { sendSimpleEmail };

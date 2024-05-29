@@ -13,8 +13,9 @@ let patientBookAppointmentServices = (data) => {
         await emailServices.sendSimpleEmail({
           receivers: data.email,
           patientName: data.fullName,
-          time: "8:00 - 9:00 Thứ tư 29/5/2024",
-          doctorName: "bác sĩ Chiến",
+          time: data.timeString,
+          doctorName: data.doctorName,
+          language: data.language,
           redirectLink: "https://www.w3schools.com/html/",
         });
         // Find or create a user based on the email provided
