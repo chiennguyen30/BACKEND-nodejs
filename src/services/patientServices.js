@@ -72,18 +72,16 @@ let postVerifyBookAppointmentServices = (data) => {
         // Tìm kiếm cuộc hẹn dựa trên doctorId, token, và statusId
         let appointment = await db.Booking.findOne({
           where: {
-            doctorId: data.doctorId,
             token: data.token,
+            doctorId: data.doctorId,
             statusId: "S1", // Trạng thái ban đầu là S1
           },
           raw: false,
         });
-
         if (appointment) {
           // Cập nhật trạng thái của cuộc hẹn
           appointment.statusId = "S2"; // Thay đổi trạng thái thành S2
           await appointment.save(); // Lưu thay đổi vào cơ sở dữ liệu
-
           resolve({
             errCode: 0,
             errMessage: "Update the appointment succeeded!!!",
