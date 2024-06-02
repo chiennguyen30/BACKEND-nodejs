@@ -11,5 +11,16 @@ let postCreateNewSpecialty = async (req, res) => {
     });
   }
 };
+let getSpecialty = async (req, res) => {
+  try {
+    let data = await specialtyServices.getSpecialtyServices();
+    return res.status(200).json(data);
+  } catch (error) {
+    return res.status(200).json({
+      errCode: -1,
+      errMessage: "Error form the server",
+    });
+  }
+};
 
-module.exports = { postCreateNewSpecialty };
+module.exports = { postCreateNewSpecialty, getSpecialty };
