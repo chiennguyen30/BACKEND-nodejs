@@ -7,7 +7,6 @@ const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
 
 // Khai báo hàm getTopDoctorHome nhận tham số limitInput
 let getTopDoctorHome = (limitInput) => {
-  // Trả về một Promise với logic async
   return new Promise(async (resolve, reject) => {
     try {
       // Lấy tất cả người dùng có roleId là "R2" từ bảng User
@@ -43,42 +42,74 @@ let getTopDoctorHome = (limitInput) => {
     }
   });
 };
+// Hàm lấy tất cả dịch vụ của bác sĩ
 let getAllDoctorsServices = () => {
   return new Promise(async (resolve, reject) => {
     try {
+      // Tìm tất cả người dùng có vai trò là bác sĩ (roleId: "R2") và loại bỏ các trường "password", "image", "phoneNumber"
       let doctors = await db.User.findAll({
         where: { roleId: "R2" },
         attributes: {
           exclude: ["password", "image", "phoneNumber"],
         },
       });
+      // Trả về danh sách bác sĩ với mã lỗi 0 (thành công)
       resolve({
         errCode: 0,
         data: doctors,
       });
     } catch (error) {
+      // Bắt lỗi và từ chối Promise nếu có lỗi xảy ra
       reject(error);
     }
   });
 };
+
+// Hàm kiểm tra các trường bắt buộc
+let checkRequiredFields = (inputData) => {
+  // Danh sách các trường bắt buộc
+  let arrFields = [
+    "doctorId",
+    "contentHTML",
+    "contentMarkdown",
+    "action",
+    "selectPrice",
+    "selectPayment",
+    "selectProvince",
+    "nameClinic",
+    "addressClinic",
+    "note",
+    "specialtyId",
+  ];
+  let isValid = true; // Biến xác định dữ liệu hợp lệ
+  let element = ""; // Biến lưu trữ tên trường thiếu
+  // Duyệt qua danh sách các trường bắt buộc
+  for (let i = 0; i < arrFields.length; i++) {
+    // Kiểm tra nếu trường bắt buộc không có trong dữ liệu đầu vào
+    if (!inputData[arrFields[i]]) {
+      // Gán isValid là false và gán tên trường thiếu cho biến element
+      isValid = false;
+      element = arrFields[i];
+      break;
+    }
+  }
+  // Trả về kết quả kiểm tra
+  return {
+    isValid,
+    element,
+  };
+};
+
+// Hàm lưu thông tin chi tiết của bác sĩ
 let saveDetailInforDoctor = (inputData) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (
-        !inputData.doctorId ||
-        !inputData.contentHTML ||
-        !inputData.contentMarkdown ||
-        !inputData.action ||
-        !inputData.selectPrice ||
-        !inputData.selectPayment ||
-        !inputData.selectProvince ||
-        !inputData.nameClinic ||
-        !inputData.addressClinic ||
-        !inputData.note
-      ) {
-        resolve({ errCode: 1, errMessage: "Missing parameter" });
+      // Kiểm tra các trường bắt buộc
+      let checkObj = checkRequiredFields(inputData);
+      if (checkObj.isValid === false) {
+        resolve({ errCode: 1, errMessage: `Missing parameter : ${checkObj.element}` });
       } else {
-        //upsert to markdown
+        // Thêm hoặc cập nhật vào bảng Markdown
         if (inputData.action === "CREATE") {
           await db.Markdown.create({
             contentHTML: inputData.contentHTML,
@@ -100,13 +131,14 @@ let saveDetailInforDoctor = (inputData) => {
           }
         }
 
-        //upsert to Doctor_Infor table
+        // Thêm hoặc cập nhật vào bảng Doctor_Infor
         let doctorInfor = await db.Doctor_Infor.findOne({
           where: { doctorId: inputData.doctorId },
           raw: false,
         });
+
         if (doctorInfor) {
-          //update
+          // Cập nhật thông tin bác sĩ
           doctorInfor.doctorId = inputData.doctorId;
           doctorInfor.priceId = inputData.selectPrice;
           doctorInfor.paymentId = inputData.selectPayment;
@@ -114,9 +146,11 @@ let saveDetailInforDoctor = (inputData) => {
           doctorInfor.nameClinic = inputData.nameClinic;
           doctorInfor.addressClinic = inputData.addressClinic;
           doctorInfor.note = inputData.note;
+          doctorInfor.specialtyId = inputData.specialtyId;
+          doctorInfor.clinicId = inputData.clinicId;
           await doctorInfor.save();
         } else {
-          //create
+          // Tạo mới thông tin bác sĩ
           await db.Doctor_Infor.create({
             doctorId: inputData.doctorId,
             priceId: inputData.selectPrice,
@@ -125,11 +159,14 @@ let saveDetailInforDoctor = (inputData) => {
             nameClinic: inputData.nameClinic,
             addressClinic: inputData.addressClinic,
             note: inputData.note,
+            specialtyId: inputData.specialtyId,
+            clinicId: inputData.clinicId,
           });
         }
+
         resolve({
           errCode: 0,
-          errMessage: "Save infro doctor succeed!!",
+          errMessage: "Save info doctor succeed!!",
         });
       }
     } catch (error) {
@@ -137,6 +174,7 @@ let saveDetailInforDoctor = (inputData) => {
     }
   });
 };
+
 let getDetailDoctorByIdServices = (inputId) => {
   return new Promise(async (resolve, reject) => {
     try {
