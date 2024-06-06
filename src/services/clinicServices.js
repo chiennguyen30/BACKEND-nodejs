@@ -60,8 +60,14 @@ let getDetailclinicByIdServices = (id) => {
       } else {
         let data = await db.Clinic.findOne({
           where: { id },
-          attributes: ["name", "address", "descriptionHTML", "descriptionMarkdown"],
+          attributes: ["name", "address", "descriptionHTML", "descriptionMarkdown", "image"],
         });
+        if (data && data.length > 0) {
+          data.map((item) => {
+            item.image = new Buffer.from(item.image, "base64").toString("binary");
+            return item;
+          });
+        }
 
         if (data) {
           let doctorClinic = [];

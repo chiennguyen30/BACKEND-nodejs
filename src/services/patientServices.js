@@ -15,7 +15,15 @@ let patientBookAppointmentServices = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       // Check for missing parameters in the input data
-      if (!data.email || !data.doctorId || !data.timeType || !data.date || !data.fullName) {
+      if (
+        !data.email ||
+        !data.doctorId ||
+        !data.timeType ||
+        !data.date ||
+        !data.fullName ||
+        !data.selectedGender ||
+        !data.address
+      ) {
         resolve({ errCode: 1, errMessage: "Missing parameter" }); // Resolve with an error message if any parameter is missing
       } else {
         let token = uuidv4();
@@ -33,6 +41,9 @@ let patientBookAppointmentServices = (data) => {
           defaults: {
             email: data.email,
             roleId: "R3", // Set default role to "R3"
+            address: data.address,
+            gender: data.selectedGender,
+            firstName: data.fullName,
           },
         });
 
