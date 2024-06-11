@@ -1,6 +1,7 @@
 // Import thư viện db từ thư mục models
 import db from "../models";
 import _, { includes, reject } from "lodash";
+import emailServices from "./emailServices";
 require("dotenv").config();
 
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
@@ -401,6 +402,45 @@ let getListPatientForDoctorServices = (doctorId, date) => {
     }
   });
 };
+
+let sendRemedyServices = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.email || !data.doctorId || !data.patientId || !data.timeType) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameter!!!",
+        });
+      } else {
+        // update patient status
+        let appointment = await db.Booking.findOne({
+          where: {
+            doctorId: data.doctorId,
+            patientId: data.patientId,
+            timeType: data.timeType,
+            statusId: "S2",
+          },
+          raw: false,
+        });
+
+        if (appointment) {
+          appointment.statusId = "S3";
+          await appointment.save();
+        }
+
+        // send email remedy
+        await emailServices.sendAttachment(data);
+
+        resolve({
+          errCode: 0,
+          errMessage: "Success",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 module.exports = {
   getTopDoctorHome,
   getAllDoctorsServices,
@@ -411,4 +451,5 @@ module.exports = {
   getExtraInforDoctorByIdServices,
   getProfileDoctorByIdServices,
   getListPatientForDoctorServices,
+  sendRemedyServices,
 };
